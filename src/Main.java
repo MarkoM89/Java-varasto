@@ -67,124 +67,97 @@ public class Main {
         while (toiminto != 4) {
         	
         	/*
-P‰‰toiminto 1: Asiakkaan ostotapahtuma
-
-P‰‰toiminto 2: Osta tuote kaupalle / Varasto
+P‰‰toiminto 1: Varaston hallinta
 		Toiminto 1: Varastosaldo
 		Toiminto 2: Osta lis‰‰ tuotetta varastoon
 
 
-P‰‰toiminto 3: Tuotehallinta
+P‰‰toiminto 2: Tuotehallinta
 		Toiminto 1: Lis‰‰ tuote
 		Toiminto 2: Poista tuote
 		Toiminto 3: Tulosta tuotteet
 		
+P‰‰toiminto 3: Seuranta
+		Toiminto 1: Selaa kuitteja
+		Toiminto 2: Etsi kuitti
+
+		
 P‰‰toiminto 4: Poistu ohjelmasta
 
-P‰‰toiminto 5: Kokeilut, Tulosta maksukortit
         	 
         	 */
         	
-        	System.out.print("\nP‰‰toiminto 1: Ostotapahtuma\nP‰‰toiminto 2: Varaston hallinta\nP‰‰toiminto 3: Tuotehallinta\n"
-        			+ "P‰‰toiminto 4: Poista ohjelmasta\nP‰‰toiminto 5: Tulosta korttien tiedot\n");
+        	System.out.print("\nP‰‰toiminto 1: Varaston hallinta\nP‰‰toiminto 2: Tuotehallinta\nP‰‰toiminto 3: Seuranta\n"
+        			+ "P‰‰toiminto 4: Poista ohjelmasta\n");
         	toiminto = lukija.nextInt();
         	lukija.nextLine();
         	
         	switch(toiminto) {
     		case 1:
-    			System.out.println("Kuka ostaa?");
-    			nimi = lukija.nextLine();
 
-    			for(Maksukortti omistaja : maksukortit) {
-
-    				if(omistaja.palautaOmistaja().equals(nimi)) {
-
-        				tuotenimi = " ";
-    					while (!tuotenimi.equals("")) {
-    					System.out.println("Valitse tuote syˆtt‰m‰ll‰ tuotteen nimi:");
-    					for(Tuote tuote : tuotteet) {
-    						tuote.tulostaTuote();
-    					}
-    					tuotenimi = lukija.nextLine();
-    					
-    					if(!tuotenimi.equals("")) {
-    					for(Tuote tuote : tuotteet) {
-    						if(tuote.haeNimi().equals(tuotenimi)) {
-    							System.out.println("Paljonko ostetaan: ");
-    							tuoteMaara = lukija.nextInt();
-    							lukija.nextLine();
-    							ostetutTuotteet.add(tuotenimi+ " " +(tuoteMaara)+ "kpl");
-    							loppusumma += (tuote.haeHinta()*tuoteMaara);
-    						}
-    					}
-    					}
-    					}
-						omistaja.veloita(loppusumma);
-    					kuitit.add(new Kuitti(nimi, loppusumma));
-    					
-    					for(String ostettu : ostetutTuotteet) {
-    						kuitit.get(kuitit.size() - 1).lisaaOstos(ostettu);
-    					}
-    					
-    					kuitit.get(kuitit.size() - 1).tulostaKuitti();
-    					ostetutTuotteet.clear();
-    					loppusumma = 0;
-    				}
-
-    			}
-
+    			System.out.println("Varaston hallinta");
     			
     			break;
     		case 2:
-    			System.out.println("Varaston hallinta");
-    			break;
-    		case 3:
+    			System.out.println("Tuotehallinta");
+    			
     			toiminto = 0;
-				    			while (toiminto != 4) {
-				    			System.out.println("Tuotteiden hallinta");
-				
-				    			System.out.print("\nToiminto 1: Lis‰‰ tuote\nToiminto 2: Poista tuote\nToiminto 3: Tulosta tuotteet\n"
-				    					+ "Toiminto 4: Poistu tuotehallinnasta\n");
-				    			
-				    			
-				            		toiminto = lukija.nextInt();
-				            		lukija.nextLine();
-				            		
-				            		switch(toiminto) {
-				            		case 1:
-				            			System.out.println("Tuotteen nimi:");
-				            			nimi = lukija.nextLine();
-				            			System.out.println("Tuotteen yksikkˆhinta:");
-				            			tuoteHinta = lukija.nextDouble();
-
-				            			tuotteet.add(new Tuote(nimi, tuoteHinta));
-				            		
-				            		
-				            		break;
-				    				case 2:
-				    	    			//Jos, lista tyhjenee nolliin, ohjelma rikkoutuu
-				    	    			System.out.println("Mik‰ tuote poistetaan? syˆt‰ tyhj‰ kentt‰, jos et halua poistaa mit‰‰n");
-				    	    			nimi = lukija.nextLine();
-				    	    			for(Tuote tuote : tuotteet) {
-				    	    				if(tuote.haeNimi().equals(nimi)) {
-				    	    					tuotteet.remove(tuote);
-				    	    				}
-				    	    				else {
-				    	    					System.out.println("Tuotetta ei lˆytynyt");
-				    	    				}
-				    	    			}
-
-				    	    			break;
-				            		
-									case 3:
-						    			System.out.println("Tulosta tuotteet");
-						    			for(Tuote tuote : tuotteet) {
-						    				tuote.tulostaTuote();
-						    			}
-						    			break;
-				            		}
+		    		while (toiminto != 4) {
+		    		System.out.println("Tuotteiden hallinta");
+		
+		    		System.out.print("\nToiminto 1: Lis‰‰ tuote\nToiminto 2: Poista tuote\nToiminto 3: Tulosta tuotteet\n"
+		    				+ "Toiminto 4: Poistu tuotehallinnasta\n");
+		    			
+		    			
+		            		toiminto = lukija.nextInt();
+		            		lukija.nextLine();
+		            		
+		            		switch(toiminto) {
+		            		case 1:
+		            			System.out.println("Tuotteen nimi:");
+		            			nimi = lukija.nextLine();
+		            			System.out.println("Tuotteen yksikkˆhinta:");
+		            			tuoteHinta = lukija.nextDouble();
+		
+		            			tuotteet.add(new Tuote(nimi, tuoteHinta));
+		            		
+		            		
+		            		break;
+		    				case 2:
+		    	    			//Jos, lista tyhjenee nolliin, ohjelma rikkoutuu
+		    	    			System.out.println("Mik‰ tuote poistetaan? syˆt‰ tyhj‰ kentt‰, jos et halua poistaa mit‰‰n");
+		    	    			nimi = lukija.nextLine();
+		    	    			for(Tuote tuote : tuotteet) {
+		    	    				if(tuote.haeNimi().equals(nimi)) {
+		    	    					tuotteet.remove(tuote);
+		    	    				}
+		    	    				else {
+		    	    					System.out.println("Tuotetta ei lˆytynyt");
+		    	    				}
+		    	    			}
+		
+		    	    			break;
+		            		
+							case 3:
+								System.out.println("Seuranta");
+		
+								
+				    			System.out.println("Tulosta tuotteet");
+				    			for(Tuote tuote : tuotteet) {
+				    				tuote.tulostaTuote();
 				    			}
-				    		toiminto = 0;
+				    			break;
+		            		}
+		    			}
+		    		toiminto = 0;
+    		
+    			break;
+    			
+    		case 3:
+    			
+    			System.out.println("Seuranta");
+    			
+
     			break;
     		case 4:
     			System.out.println("Poistutaan ohjelmasta");
