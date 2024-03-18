@@ -11,15 +11,9 @@ public class Main {
         Scanner lukija = new Scanner(System.in);
         int toiminto = 0;
         String nimi;
-        String tuotenimi = " ";
-        int tuoteMaara;
         double tuoteHinta;
-        double loppusumma = 0;
-        
-        
         ArrayList<Maksukortti> maksukortit = new ArrayList<>();
         ArrayList<Tuote> tuotteet = new ArrayList<>();
-        ArrayList<String> ostetutTuotteet = new ArrayList<>();
         ArrayList<Kuitti> kuitit = new ArrayList<>();
         
         
