@@ -1,5 +1,4 @@
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -14,9 +13,6 @@ public class Main {
         int tuotetunniste = 0;
         boolean loytyi = false;
         double tuoteHinta;
-        ArrayList<Maksukortti> maksukortit = new ArrayList<>();
-        ArrayList<Tuote> tuotteet = new ArrayList<>();
-        ArrayList<Kuitti> kuitit = new ArrayList<>();
         
         
         
