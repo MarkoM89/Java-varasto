@@ -11,6 +11,8 @@ public class Main {
         Scanner lukija = new Scanner(System.in);
         int toiminto = 0;
         String nimi;
+        int tuotetunniste = 0;
+        boolean loytyi = false;
         double tuoteHinta;
         ArrayList<Maksukortti> maksukortit = new ArrayList<>();
         ArrayList<Tuote> tuotteet = new ArrayList<>();
@@ -22,41 +24,7 @@ public class Main {
         connConfig.setProperty("user", "root");
         connConfig.setProperty("password", "T13t0k4!?t4");
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306", connConfig)) {
-            try (Statement stmt = conn.createStatement()) {
-                try (ResultSet tilitiedot = stmt.executeQuery("SELECT * FROM kokeilutietokanta.pankki")) {
-                    while (tilitiedot.next()) {
-                    	System.out.println(String.format("%s %s %s",
-                            tilitiedot.getString("tunniste"),
-                            tilitiedot.getString("nimi"),
-                            tilitiedot.getString("saldo")));
-                    		maksukortit.add(new Maksukortti(tilitiedot.getString("nimi"), tilitiedot.getFloat("saldo")));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        System.out.println("\n\n");
-        
-        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306", connConfig)) {
-            try (Statement stmt = conn.createStatement()) {
-                try (ResultSet tilitiedot = stmt.executeQuery("SELECT * FROM kokeilutietokanta.tuote")) {
-                    while (tilitiedot.next()) {
-                    	System.out.println(String.format("%s %s %s",
-                            tilitiedot.getString("tuotetunniste"),
-                            tilitiedot.getString("tuotenimi"),
-                            tilitiedot.getString("yksikköhinta")));
-                    	tuotteet.add(new Tuote(tilitiedot.getString("tuotenimi"), tilitiedot.getFloat("yksikköhinta")));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        System.out.println("\n\n");
+
         
         while (toiminto != 4) {
         	
@@ -113,22 +81,37 @@ Päätoiminto 4: Poistu ohjelmasta
 		            			System.out.println("Tuotteen yksikköhinta:");
 		            			tuoteHinta = lukija.nextDouble();
 		
-		            			tuotteet.add(new Tuote(nimi, tuoteHinta));
+		            			try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/kokeilutietokanta", connConfig)) {
+		    		             	PreparedStatement stmt = conn.prepareStatement("INSERT INTO tuote (tuotenimi, yksikköhinta) VALUES (?, ?)");
+		    		            	stmt.setString(1, nimi);
+		    		            	stmt.setDouble(2, tuoteHinta);
+		    		            	stmt.executeQuery(); 
+
+		    		                    
+		    		        } catch (Exception e) {
+		    		            e.printStackTrace();
+		    		        }
 		            		
 		            		
 		            		break;
 		    				case 2:
-		    	    			//Jos, lista tyhjenee nolliin, ohjelma rikkoutuu
-		    	    			System.out.println("Mikä tuote poistetaan? syötä tyhjä kenttä, jos et halua poistaa mitään");
-		    	    			nimi = lukija.nextLine();
-		    	    			for(Tuote tuote : tuotteet) {
-		    	    				if(tuote.haeNimi().equals(nimi)) {
-		    	    					tuotteet.remove(tuote);
-		    	    				}
-		    	    				else {
-		    	    					System.out.println("Tuotetta ei löytynyt");
-		    	    				}
-		    	    			}
+
+		    	    			System.out.println("Mikä tuote poistetaan? syötä luku 0, jos et halua poistaa mitään");
+		    	    			tuotetunniste = lukija.nextInt();
+		    	    			lukija.nextLine();
+		    	    			
+		    	    			
+		    	    			if(tuotetunniste != 0) {
+		            			try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/kokeilutietokanta", connConfig)) {
+		    		             	PreparedStatement stmt = conn.prepareStatement("DELETE FROM tuote WHERE tuotetunniste = ?");
+		    		            	stmt.setInt(1, tuotetunniste);
+		    		            	stmt.executeQuery(); 
+
+		    		                    
+		    		        } catch (Exception e) {
+		    		            e.printStackTrace();
+		    		        }
+		    	    	}
 		
 		    	    			break;
 		            		
@@ -137,9 +120,20 @@ Päätoiminto 4: Poistu ohjelmasta
 		
 								
 				    			System.out.println("Tulosta tuotteet");
-				    			for(Tuote tuote : tuotteet) {
-				    				tuote.tulostaTuote();
-				    			}
+				    			
+				    	        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/kokeilutietokanta", connConfig)) {
+				    	            try (Statement stmt = conn.createStatement()) {
+				    	                try (ResultSet tuotetiedot = stmt.executeQuery("SELECT * FROM tuote")) {
+				    	                    while (tuotetiedot.next()) {
+				    	                    	
+				    	                    	System.out.println(tuotetiedot.getString("tuotetunniste")+ " " +tuotetiedot.getString("tuotenimi")+ " " +tuotetiedot.getString("yksikköhinta")+ "€");
+				    	                    }
+				    	                }
+				    	            }
+				    	        } catch (Exception e) {
+				    	            e.printStackTrace();
+				    	        }
+				    			
 				    			break;
 		            		}
 		    			}
@@ -159,14 +153,34 @@ Päätoiminto 4: Poistu ohjelmasta
 
     		case 5:
     			System.out.println("Tulosta korttien tiedot");
-    			for(Maksukortti omistaja : maksukortit) {
-    				omistaja.tulostaSaldo();
-    			}
     			
+    	        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/kokeilutietokanta", connConfig)) {
+    	            try (Statement stmt = conn.createStatement()) {
+    	                try (ResultSet tilitiedot = stmt.executeQuery("SELECT * FROM pankki")) {
+    	                    while (tilitiedot.next()) {
+    	                    	
+    	                    	System.out.println(tilitiedot.getString("tunniste")+ " " +tilitiedot.getString("nimi")+ " " +tilitiedot.getString("saldo")+ "€");
+    	                    }
+    	                }
+    	            }
+    	        } catch (Exception e) {
+    	            e.printStackTrace();
+    	        }
+    	        
     			System.out.println("\n\nTulosta kuitit");
-    			for(Kuitti omistaja : kuitit) {
-    				omistaja.tulostaKuitti();
-    			}
+    			
+    	        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/kokeilutietokanta", connConfig)) {
+    	            try (Statement stmt = conn.createStatement()) {
+    	                try (ResultSet kuittitiedot = stmt.executeQuery("SELECT * FROM kuitti")) {
+    	                    while (kuittitiedot.next()) {
+    	                    	
+    	                    	System.out.println(kuittitiedot.getInt("kuittitunnus")+ " " +kuittitiedot.getTimestamp("osto_aika")+ " " +kuittitiedot.getDouble("kokonaishinta")+ "€");
+    	                    }
+    	                }
+    	            }
+    	        } catch (Exception e) {
+    	            e.printStackTrace();
+    	        }
     			
 
     			break;
