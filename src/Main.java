@@ -13,6 +13,7 @@ public class Main {
         int tuotetunniste = 0;
         boolean loytyi = false;
         double tuoteHinta;
+		int kuittitunnus;
         
         
         
@@ -25,28 +26,28 @@ public class Main {
         while (toiminto != 4) {
         	
         	/*
-P��toiminto 1: Varaston hallinta
+Päätoiminto 1: Varaston hallinta
 		Toiminto 1: Varastosaldo
-		Toiminto 2: Osta lis�� tuotetta varastoon
+		Toiminto 2: Osta lisää tuotetta varastoon
 
 
-P��toiminto 2: Tuotehallinta
-		Toiminto 1: Lis�� tuote
+Päätoiminto 2: Tuotehallinta
+		Toiminto 1: Lisää tuote
 		Toiminto 2: Poista tuote
 		Toiminto 3: Tulosta tuotteet
 		
-P��toiminto 3: Seuranta
+Päätoiminto 3: Seuranta
 		Toiminto 1: Selaa kuitteja
 		Toiminto 2: Etsi kuitti
 
 		
-P��toiminto 4: Poistu ohjelmasta
+Päätoiminto 4: Poistu ohjelmasta
 
         	 
         	 */
         	
-        	System.out.print("\nP��toiminto 1: Varaston hallinta\nP��toiminto 2: Tuotehallinta\nP��toiminto 3: Seuranta\n"
-        			+ "P��toiminto 4: Poista ohjelmasta\n");
+        	System.out.print("\nPäätoiminto 1: Varaston hallinta\nPäätoiminto 2: Tuotehallinta\nPäätoiminto 3: Seuranta\n"
+        			+ "Päätoiminto 4: Poista ohjelmasta\n");
         	toiminto = lukija.nextInt();
         	lukija.nextLine();
         	
@@ -63,7 +64,7 @@ P��toiminto 4: Poistu ohjelmasta
 		    		while (toiminto != 4) {
 		    		System.out.println("Tuotteiden hallinta");
 		
-		    		System.out.print("\nToiminto 1: Lis�� tuote\nToiminto 2: Poista tuote\nToiminto 3: Tulosta tuotteet\n"
+		    		System.out.print("\nToiminto 1: Lisää tuote\nToiminto 2: Poista tuote\nToiminto 3: Tulosta tuotteet\n"
 		    				+ "Toiminto 4: Poistu tuotehallinnasta\n");
 		    			
 		    			
@@ -74,11 +75,11 @@ P��toiminto 4: Poistu ohjelmasta
 		            		case 1:
 		            			System.out.println("Tuotteen nimi:");
 		            			nimi = lukija.nextLine();
-		            			System.out.println("Tuotteen yksikk�hinta:");
+		            			System.out.println("Tuotteen yksikköhinta:");
 		            			tuoteHinta = lukija.nextDouble();
 		
 		            			try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/pankki_kauppa", connConfig)) {
-		    		             	PreparedStatement stmt = conn.prepareStatement("INSERT INTO tuote (tuotenimi, yksikk�hinta) VALUES (?, ?)");
+		    		             	PreparedStatement stmt = conn.prepareStatement("INSERT INTO tuote (tuotenimi, yksikköhinta) VALUES (?, ?)");
 		    		            	stmt.setString(1, nimi);
 		    		            	stmt.setDouble(2, tuoteHinta);
 		    		            	stmt.executeQuery(); 
@@ -92,7 +93,7 @@ P��toiminto 4: Poistu ohjelmasta
 		            		break;
 		    				case 2:
 
-		    	    			System.out.println("Mik� tuote poistetaan? sy�t� luku 0, jos et halua poistaa mit��n");
+		    	    			System.out.println("Mikä tuote poistetaan? syötä luku 0, jos et halua poistaa mitään");
 		    	    			tuotetunniste = lukija.nextInt();
 		    	    			lukija.nextLine();
 		    	    			
@@ -122,7 +123,7 @@ P��toiminto 4: Poistu ohjelmasta
 				    	                try (ResultSet tuotetiedot = stmt.executeQuery("SELECT * FROM tuote")) {
 				    	                    while (tuotetiedot.next()) {
 				    	                    	
-				    	                    	System.out.println(tuotetiedot.getString("tuotetunniste")+ " " +tuotetiedot.getString("tuotenimi")+ " " +tuotetiedot.getString("yksikk�hinta")+ "�");
+				    	                    	System.out.println(tuotetiedot.getString("tuotetunniste")+ " " +tuotetiedot.getString("tuotenimi")+ " " +tuotetiedot.getString("yksikköhinta")+ "€");
 				    	                    }
 				    	                }
 				    	            }
@@ -139,47 +140,78 @@ P��toiminto 4: Poistu ohjelmasta
     			
     		case 3:
     			
-    			System.out.println("Seuranta");
-    			
+        System.out.println("\nPäätoiminto 3: Ostoseuranta\n");
 
-    			break;
-    		case 4:
-    			System.out.println("Poistutaan ohjelmasta");
-    			break;
+        toiminto = 0;
 
-    		case 5:
-    			System.out.println("Tulosta korttien tiedot");
-    			
-    	        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/pankki_kauppa", connConfig)) {
-    	            try (Statement stmt = conn.createStatement()) {
-    	                try (ResultSet tilitiedot = stmt.executeQuery("SELECT * FROM pankki")) {
-    	                    while (tilitiedot.next()) {
-    	                    	
-    	                    	System.out.println(tilitiedot.getString("tunniste")+ " " +tilitiedot.getString("nimi")+ " " +tilitiedot.getString("saldo")+ "�");
-    	                    }
-    	                }
-    	            }
-    	        } catch (Exception e) {
-    	            e.printStackTrace();
-    	        }
-    	        
-    			System.out.println("\n\nTulosta kuitit");
+        while (toiminto != 3){
+
+
+            System.out.println("Toiminto 1: Selaa kuitteja\nToiminto 2: Etsi kuitti\nToiminto 3: Poistu ostoseurannasta\n");
+                               
+			toiminto = lukija.nextInt();
+			lukija.nextLine();
+
+            if (toiminto == 1) {
+
+
+                System.out.println("\n\nKuitit\n-----------------------------------------\n");
     			
     	        try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/pankki_kauppa", connConfig)) {
     	            try (Statement stmt = conn.createStatement()) {
     	                try (ResultSet kuittitiedot = stmt.executeQuery("SELECT * FROM kuitti")) {
     	                    while (kuittitiedot.next()) {
     	                    	
-    	                    	System.out.println(kuittitiedot.getInt("kuittitunnus")+ " " +kuittitiedot.getTimestamp("osto_aika")+ " " +kuittitiedot.getDouble("kokonaishinta")+ "�");
+    	                    	System.out.println(kuittitiedot.getInt("kuittitunnus")+ " " +kuittitiedot.getTimestamp("osto_aika")+ " " +kuittitiedot.getDouble("kokonaishinta")+ "€");
     	                    }
     	                }
     	            }
     	        } catch (Exception e) {
     	            e.printStackTrace();
     	        }
+
+                System.out.println("\n");
+			}
+
+
+            if (toiminto == 2){
+
+				System.out.println("Anna kuittinumero");
+
+				kuittitunnus = lukija.nextInt();
+				lukija.nextLine();
+
+
+				System.out.println("\n\nKuitti\n-----------------------------------------\n");
     			
+		            			try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/pankki_kauppa", connConfig)) {
+		    		             	PreparedStatement stmt = conn.prepareStatement("SELECT * FROM kuitti\r\n" + //
+																				"INNER JOIN ostettu_tuote ON kuitti.kuittitunnus = ostettu_tuote.kuittitunnus\r\n" + //
+																				"INNER JOIN tuote ON tuote.tuotetunniste = ostettu_tuote.tuotetunnus\r\n" + //
+																				"WHERE kuitti.kuittitunnus = ?;");
+		    		            	stmt.setInt(1, kuittitunnus);
+		    		            	ResultSet kuittitiedot = stmt.executeQuery();
+
+								while (kuittitiedot.next()) {
+    	                    	System.out.println(kuittitiedot.getInt("kuittitunnus")+ " " +kuittitiedot.getTimestamp("osto_aika")+ " " +kuittitiedot.getDouble("kokonaishinta")+ "€");
+    	                    }
+
+		    		                    
+		    		        } catch (Exception e) {
+		    		            e.printStackTrace();
+		    		        }
+							System.out.println("\n");
+
+		}
+		}
+
 
     			break;
+    		case 4:
+    			System.out.println("Poistutaan ohjelmasta");
+    			break;
+
+
     			
     		default:
     			System.out.println("Vain numerot 1-4");
